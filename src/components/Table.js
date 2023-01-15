@@ -1,34 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 import axios from 'axios';
+import moment from 'moment';
 import "./table.css"
 
 
 
 function Table() {
- const[dataLog, setDataLog] = useState([]);
- const[logId,setLogId]=useState("");
- const[actionType,setActionType]=useState("");
- const[applicationType,setApplicationType]=useState("");
- const[applicationId,setApplicationId]=useState("");
- const[toDate,setToDate]=useState("");
- const[fromDate,setFromDate]=useState("");
- const[actionTypeList,setActionTypeList]=useState([]);
- const[applicationTypeList,setApplicationTypeList]=useState([]);
+ const [auditLogArray, setAuditLogArray] = useState([]);
+ const [logId,setLogId]=useState("");
+ const [actionType,setActionType]=useState("");
+ const [applicationType,setApplicationType]=useState("");
+ const [applicationId,setApplicationId]=useState("");
+ const [toDate,setToDate]=useState("");
+ const [fromDate,setFromDate]=useState("");
+ const [actionTypeList,setActionTypeList]=useState([]);
+ const [applicationTypeList,setApplicationTypeList]=useState([]);
+ const [filterAuditArray, setFilterAuditArray] = useState([]);
 
  
  useEffect(() => {
- getDataLog();
+ getAuditLogArray();
  
 }, []);
 
 //Function to fetch data from API provided
-async function getDataLog() {
+async function getAuditLogArray() {
   let data=[];
   try{
     const response= await axios.get('https://run.mocky.io/v3/a2fbc23e-069e-4ba5-954c-cd910986f40f');
     data=response.data.result.auditLog;
-    setDataLog(data);
+    setAuditLogArray(data);
+    setFilterAuditArray(data);
   } catch (error){
     console.log(error);
   }
@@ -42,28 +45,42 @@ async function getDataLog() {
 
 //Filtering the Data based on User Input
 function handleSearch() {
+  let isEmpty=true;
+let filteredlist=auditLogArray;
+console.log(logId,actionType,applicationId,applicationType,toDate,fromDate,isEmpty)
  
-if(logId){
- setDataLog(dataLog.filter((e) =>e.logId == logId));
- console.log(JSON.stringify(setDataLog)); 
+ if(logId){
+   filteredlist=filteredlist.filter((e) =>e.logId == logId); 
+   isEmpty=false;
  }
 if(actionType){
-setActionType(dataLog.filter((e) =>e.actionTypeList==actionType));
+  filteredlist=filteredlist.filter((e) =>e.actionType==actionType);
+  isEmpty=false;
 }
 if(applicationType){
-  setApplicationType(dataLog.filter((e)=>e.applicationType==applicationType));
+  filteredlist=filteredlist.filter((e)=>e.applicationType==applicationType);
+  isEmpty=false;
 }
 if(applicationId){
-  setApplicationId(dataLog.filter((e)=>e.applicationId==applicationType));
+  filteredlist=filteredlist.filter((e)=>e.applicationId==applicationId);
+  isEmpty=false;
 }
 if(toDate){
-  setToDate(dataLog.filter((e)=>e.toDate==toDate));
+  filteredlist=filteredlist.filter((e)=>moment(e.creationTimestamp,"YYYY-MM-DD hh:mm:ss").isBefore(toDate,'day'));
+  isEmpty=false;
 }
 if(fromDate){
-  setFromDate(dataLog.filter((e)=>e.fromDate==fromDate));
+  filteredlist=filteredlist.filter((e)=>moment(e.creationTimestamp,"YYYY-MM-DD hh:mm:ss").isAfter(fromDate));
+  console.log(filteredlist);
+  isEmpty=false;
 }
+if(isEmpty){
+  filteredlist=auditLogArray;
 }
 
+setFilterAuditArray(filteredlist);
+console.log(filterAuditArray);
+}
 
  
 
@@ -93,14 +110,21 @@ if(fromDate){
     {
       name: 'Action Details',
       selector: row => row.actionType,
+      sortable: true,
     },
     {
       name: 'Date:Time',
       selector: row => row.creationTimestamp,
+      sortable: true,
     },
   
   
   ];
+
+  const paginationComponentOptions = {
+    selectAllRowsItem: true,
+    selectAllRowsItemText: 'ALL',
+  };
   
   
   return ( 
@@ -138,11 +162,11 @@ if(fromDate){
     </div>
     <div>
     <p>From Date</p>
-    <input label="FromDate" type="date" placeholder="dd/mm/yyyy" value={fromDate} onChange={(e)=>{setFromDate(e.target.value)}} />
+    <input label="FromDate" type="date" placeholder="DD/mm/YYYY" value={fromDate} onChange={(e)=>{setFromDate(e.target.value)}} />
     </div>
     <div>
     <p>To Date</p>
-    <input label="ToDate" type="date" placeholder="dd/mm/yyyy" value={toDate} onChange={(e)=>{setToDate(e.target.value)}} />
+    <input label="ToDate" type="date" placeholder="DD/mm/YYYY" value={toDate} onChange={(e)=>{setToDate(e.target.value)}} />
     </div>
     <div>
     <p>Application Id</p>
@@ -154,11 +178,12 @@ if(fromDate){
   <div className='table-container'>
   <DataTable 
   columns={columns} 
-  data={dataLog} 
+  data={filterAuditArray} 
   pagination 
+  paginationComponentOptions={paginationComponentOptions}
   fixedHeader
   fixedHeaderScrollHeight='550px'
-  highlightOnHover />
+  highlightOnHover/>
   </div>
   </div>
   );
