@@ -1,0 +1,59 @@
+.body{
+        display: block;
+        margin: 10px;
+      
+}
+div{
+    font-family: 'Roboto', sans-serif;
+    width: auto;
+}
+
+button {
+ background-color: #0f489b;
+ color: #ecf0f8;
+ cursor: pointer;
+ margin: 17px 10px 0px 10px;
+ border-radius: 5px;
+ padding: 5px 5px 5px 5px;
+ height: 35px;
+ width:190px;
+}
+
+select, input{
+ margin: 0px 10px 0px 10px;
+ border-radius: 5px;
+ border-color: #2f3941;
+ border-width: 1px;
+}
+input {
+ height: 30px;
+ width:165px;
+}
+
+select{
+ height: 33px;
+ width: 165px;
+
+}
+
+.input-container{
+    display:flex;
+}
+
+.input-container p{
+    margin:0px 10px 3px 10px;
+    font-size: small;
+}
+
+.table-container{
+    margin: 25px 0px 0px 0px;
+    width: 100%;
+    box-shadow: 0 4px 8px 0px rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.2);
+    text-align: center;
+}
+
+
+a{
+    text-decoration: none;
+    color: #0f489b;
+}
