@@ -25,65 +25,54 @@ function Table() {
 }, []);
 
 //Function to fetch data from API provided
-async function getAuditLogArray() {
-  let data=[];
-  try{
-    const response= await axios.get('https://run.mocky.io/v3/a2fbc23e-069e-4ba5-954c-cd910986f40f');
-    data=response.data.result.auditLog;
-    setAuditLogArray(data);
-    setFilterAuditArray(data);
-  } catch (error){
-    console.log(error);
-  }
+ async function getAuditLogArray() {
+   let data=[];
+   try{
+     const response= await axios.get('https://run.mocky.io/v3/a2fbc23e-069e-4ba5-954c-cd910986f40f');
+     data=response.data.result.auditLog;
+     setAuditLogArray(data);
+     setFilterAuditArray(data);
+   } catch (error){
+     console.log(error);
+    }
 
-  //creating new array with unique value to display in the selector dropdown
-  setActionTypeList([...new Set (data.map((x)=>x.actionType))]); 
-  setApplicationTypeList([...new Set (data.map((x)=>x.applicationType))]);
+   //creating new array with unique value to display in the selector dropdown
+   setActionTypeList([...new Set (data.map((x)=>x.actionType))]); 
+   setApplicationTypeList([...new Set (data.map((x)=>x.applicationType))]);
 
 }
 
 
 //Filtering the Data based on User Input
 function handleSearch() {
-  let isEmpty=true;
-let filteredlist=auditLogArray;
-console.log(logId,actionType,applicationId,applicationType,toDate,fromDate,isEmpty)
+ let filteredlist=auditLogArray;
+
  
  if(logId){
    filteredlist=filteredlist.filter((e) =>e.logId == logId); 
-   isEmpty=false;
+  }
+ if(actionType){
+   filteredlist=filteredlist.filter((e) =>e.actionType==actionType);
+  }
+ if(applicationType){
+   filteredlist=filteredlist.filter((e)=>e.applicationType==applicationType);
+  }
+ if(applicationId){
+   filteredlist=filteredlist.filter((e)=>e.applicationId==applicationId);
+  }
+ if(toDate){
+   filteredlist=filteredlist.filter((e)=>moment(e.creationTimestamp,"YYYY-MM-DD hh:mm:ss").isBefore(toDate,'day'));
  }
-if(actionType){
-  filteredlist=filteredlist.filter((e) =>e.actionType==actionType);
-  isEmpty=false;
-}
-if(applicationType){
-  filteredlist=filteredlist.filter((e)=>e.applicationType==applicationType);
-  isEmpty=false;
-}
-if(applicationId){
-  filteredlist=filteredlist.filter((e)=>e.applicationId==applicationId);
-  isEmpty=false;
-}
-if(toDate){
-  filteredlist=filteredlist.filter((e)=>moment(e.creationTimestamp,"YYYY-MM-DD hh:mm:ss").isBefore(toDate,'day'));
-  isEmpty=false;
-}
-if(fromDate){
-  filteredlist=filteredlist.filter((e)=>moment(e.creationTimestamp,"YYYY-MM-DD hh:mm:ss").isAfter(fromDate));
-  console.log(filteredlist);
-  isEmpty=false;
-}
-if(isEmpty){
-  filteredlist=auditLogArray;
-}
+ if(fromDate){
+   filteredlist=filteredlist.filter((e)=>moment(e.creationTimestamp,"YYYY-MM-DD hh:mm:ss").isAfter(fromDate));
+   console.log(filteredlist);
+ }
 
-setFilterAuditArray(filteredlist);
-console.log(filterAuditArray);
+ setFilterAuditArray(filteredlist);
+ console.log(filterAuditArray);
 }
 
  
-
 //Defining columns of the table
   const columns = [
     {
